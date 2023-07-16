@@ -23,7 +23,7 @@ class NewsletterUser extends Resource
      *
      * @var string
      */
-    public static $title = 'id';
+    public static $title = 'email';
 
     /**
      * The columns that should be searched.
