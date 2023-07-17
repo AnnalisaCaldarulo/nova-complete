@@ -13,12 +13,15 @@ class ArticleInsights extends Dashboard
      *
      * @return array
      */
+    public function name(){
+        return 'Dati sugli articoli';
+    }
     public function cards()
     {
         return [
 
-            new ArticlePerUser,
-            new ArticleGoalPerWeek,
+           ( new ArticlePerUser())->width('1/2')->dynamicHeight(),
+            (new ArticleGoalPerWeek())->width('1/2')->dynamicHeight(),
         ];
     }
 

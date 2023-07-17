@@ -3,18 +3,20 @@
 namespace App\Providers;
 
 use App\Nova\User;
-use App\Nova\Article;
+
 use Laravel\Nova\Nova;
+use App\Models\Article;
 use App\Nova\NewsletterUser;
 use App\Nova\Dashboards\Main;
 use Laravel\Nova\Menu\MenuItem;
 use Laravel\Nova\Menu\MenuSection;
+use App\Nova\Article as NovaArticle;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Article as ModelArticle;
 use App\Nova\Dashboards\ArticleInsights;
+use App\Nova\Lenses\MostProlificWirters;
 use App\Nova\Dashboards\NewsletterInsights;
 use Laravel\Nova\NovaApplicationServiceProvider;
-use App\Nova\Lenses\MostProlificWirters;
 
 
 class NovaServiceProvider extends NovaApplicationServiceProvider
@@ -27,42 +29,48 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     public function boot()
     {
         parent::boot();
-        // Nova::mainMenu(function(){
-        //     return [
-        //         MenuSection::make('Dashboards', [
-        //                 MenuItem::dashboard(Main::class),
-        //                 MenuItem::dashboard(ArticleInsights::class)
-        //         ])->icon('view-grid'),
-        //         MenuSection::make('Sezione utenti', [
-    
-        //             MenuItem::resource(User::class),
-    
-        //             // MenuItem::lens(User::class, MostProlificWriters::class),
-    
-        //             MenuItem::resource(NewsletterUser::class)
-    
-        //         ])->icon('user'),
-    
-            
-        //         MenuSection::make('Sezione articoli', [
+        Nova::mainMenu(
+            function () {
+                return [
+                    MenuSection::make('Dashboards', [
+                        MenuItem::dashboard(Main::class),
+                       
+                    ])->icon('view-grid'),
 
-        //             MenuItem::resource(Article::class),
 
-        //         ])->path('/resources/articles')
+                    MenuSection::make('Sezione utenti', [
 
-        //         ->withBadgeIf('Goal!', 'success', fn() => Article::where('created_at', '>=', now()->startOfWeek())->count() >= 10)
+                        MenuItem::resource(User::class),
 
-        //         ->icon('document-text'),
+                        MenuItem::lens(User::class, MostProlificWirters::class),
 
-        //         MenuSection::make('Strumenti', [
+                        MenuItem::resource(NewsletterUser::class)
 
-        //             MenuItem::link('File Manager', '/nova-file-manager'),
+                    ])->icon('user'),
 
-        //         ])->icon('server'),
-        //         ];
-        // });
+
+                    MenuSection::make('Sezione articoli', [
+
+                        MenuItem::resource(NovaArticle::class),
+                        MenuItem::dashboard(ArticleInsights::class)
+
+                    ])->path('/resources/articles')
+
+                        ->withBadgeIf('Goal!', 'success', fn () => Article::where('created_at', '>=', now()->startOfWeek())->count() >= 2),
+
+                    MenuSection::make('Strumenti', [
+
+                        MenuItem::link('File Manager', '/nova-file-manager'),
+
+                    ])->icon('server'),
+                    //         ];
+                    // });
+                ];
+            }
+        );
     }
-   
+
+
     /**
      * Register the Nova routes.
      *
@@ -71,9 +79,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function routes()
     {
         Nova::routes()
-                ->withAuthenticationRoutes()
-                ->withPasswordResetRoutes()
-                ->register();
+            ->withAuthenticationRoutes()
+            ->withPasswordResetRoutes()
+            ->register();
     }
 
     /**
@@ -101,7 +109,6 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             new \App\Nova\Dashboards\Main,
             new NewsletterInsights,
             new ArticleInsights
-
         ];
     }
 
